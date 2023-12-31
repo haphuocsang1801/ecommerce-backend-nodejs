@@ -40,5 +40,11 @@ class KeyTokenService {
   static removeKeyById = async (id) => {
     return await keytokenModel.deleteOne({ _id: new Types.ObjectId(id) });
   };
+  static findByRefreshTokenUsed = async (refreshToken) => {
+    return await keytokenModel.findOne({ refreshTokenUsed: refreshToken }).lean();
+  };
+  static deleteKeyById = async (refreshToken) => {
+    return await keytokenModel.deleteOne({ refreshTokenUsed: refreshToken });
+  }
 }
 module.exports = KeyTokenService;

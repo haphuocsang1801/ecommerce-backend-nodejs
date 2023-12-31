@@ -4,7 +4,7 @@ const shopModel = require("../models/shop.model");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const KeyTokenService = require("./keyToken.service");
-const { createTokenPair } = require("../auth/authUtils");
+const { createTokenPair, verifyJWT } = require("../auth/authUtils");
 const { getInfoData } = require("../utils");
 const { BadRequestError, AuthFailureError } = require("../core/error.response");
 const { findByEmail } = require("./shop.service");
@@ -133,6 +133,12 @@ class AccessService {
   static async logout({ keyStore }) {
     const delKey = await KeyTokenService.removeKeyById(keyStore._id);
     return delKey;
+  }
+  static async handlerRefreshToken({ refreshToken }) {
+    const foundToken = await KeyTokenService.findByRefreshTokenUsed(refreshToken);
+    if (foundToken) {
+      const {userId, email } = await verifyJWT(refreshToken, foundToken.privateKey);
+    }
   }
 }
 
