@@ -28,7 +28,7 @@ const productSchema = new Schema(
     product_type: {
       type: String,
       required: true,
-      enum: ["Electronics", "Clothing", "Furniture"],
+      enum: ["Electronic", "Clothing"],
     },
     product_shop: {
       type: Schema.Types.ObjectId,
@@ -47,6 +47,10 @@ const clothingSchema = new Schema(
     brand: { type: String, require: true },
     size: String,
     material: String,
+    product_shop: {
+      type: Schema.Types.ObjectId,
+      ref: "Shop",
+    }
   },
   {
     collection: "clothes",
@@ -59,14 +63,35 @@ const electronicSchema = new Schema(
     manufacturer: { type: String, require: true },
     model: String,
     color: String,
+    product_shop: {
+      type: Schema.Types.ObjectId,
+      ref: "Shop",
+    }
   },
   {
     collection: "electronics",
     timestamps: true,
   }
 );
+// define the product type = furniture
+const furnitureSchema = new Schema(
+  {
+    brand: { type: String, require: true },
+    size: String,
+    material: String,
+    product_shop: {
+      type: Schema.Types.ObjectId,
+      ref: "Shop",
+    }
+  },
+  {
+    collection: "furnitures",
+    timestamps: true,
+  }
+);
 module.exports = {
   product: model(DOCUMENT_NAME, productSchema),
   clothing: model("Clothing", clothingSchema),
-  electronic: model("Electronics", electronicSchema),
+  electronic: model("Electronic", electronicSchema),
+  furniture: model("Furniture", electronicSchema),
 }
