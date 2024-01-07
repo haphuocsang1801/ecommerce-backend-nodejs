@@ -12,7 +12,7 @@ const findByEmail = async ({
     name: 1,
   },
 }) => {
-  return await shopModel.findOne({ email }).select(select).lean();
+  return await shopModel.findOne({ email }).select(select)
 };
 
 module.exports = {
