@@ -8,4 +8,7 @@ const router = express.Router();
 router.use(authenticationV2);
 
 router.post("", asyncHandler(productController.createProduct));
+
+//QUERY
+router.get("/drafts/all", asyncHandler(productController.getAllDraftsForShop));
 module.exports = router;

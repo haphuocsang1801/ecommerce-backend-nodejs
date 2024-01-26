@@ -2,6 +2,7 @@
 //Factory Pattern for creating different types of products
 const { product, clothing, electronic,furniture } = require("../models/product.model");
 const { BadRequestError } = require("../core/error.response");
+const productRepo = require("../models/repositories/product.repo");
 class ProductFactory {
 
   static productRegistry = {}
@@ -12,6 +13,13 @@ class ProductFactory {
     const ProductClass = ProductFactory.productRegistry[type];
     if (!ProductClass) throw new BadRequestError(`Invalid product type:: ${type}`);
     return await new ProductClass(payload).createProduct();
+  }
+  static async findAllDraftForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = {
+      product_shop,
+      isDraft: true,
+    };
+    return await productRepo.findAllDarftForShop({ query, limit, skip });
   }
 }
 class Product {
@@ -35,7 +43,7 @@ class Product {
     this.product_attributes = product_attributes;
   }
   async createProduct(productId) {
-    return await product.create({ ...this, product_id: productId });
+    return await product.create({ ...this, _id: productId });
   }
 }
 
