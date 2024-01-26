@@ -22,6 +22,17 @@ class ProductController {
       }),
     }).send(res);
   };
+
+  publishProductByShop = async (req, res, next) => {
+    new SuccessResponse({
+      message: "publishProductByShop success!",
+      metadata: await ProductServiceV2.publishProductByShop({
+        product_id: req.params.id,
+        product_shop: req.user.userId,
+      }),
+    }).send(res);
+  }
+
   // QUERY //
   /**
    * @description Get All Drafts for shop
@@ -37,5 +48,13 @@ class ProductController {
       }),
     }).send(res);
   };
+  getAllPublishForShop = async (req, res, next) => {
+    new SuccessResponse({
+     message: "Get list publish success!",
+     metadata: await ProductServiceV2.findAllPublishForShop({
+       product_shop: req.user.userId,
+     }),
+   }).send(res);
+ };
 }
 module.exports = new ProductController();

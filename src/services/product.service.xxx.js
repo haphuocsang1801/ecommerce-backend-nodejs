@@ -14,12 +14,33 @@ class ProductFactory {
     if (!ProductClass) throw new BadRequestError(`Invalid product type:: ${type}`);
     return await new ProductClass(payload).createProduct();
   }
+  //PUT
+  static async publishProductByShop({
+    product_shop,
+    product_id
+  }) {
+      return await productRepo.publishProductByShop({
+      product_id,
+      product_shop
+    })
+  }
+  // END PUT //
+
+
+  //QUERY
   static async findAllDraftForShop({ product_shop, limit = 50, skip = 0 }) {
     const query = {
       product_shop,
       isDraft: true,
     };
     return await productRepo.findAllDarftForShop({ query, limit, skip });
+  }
+  static async findAllPublishForShop({ product_shop, limit = 50, skip = 0 }) {
+    const query = {
+      product_shop,
+      isPublish: true,
+    };
+    return await productRepo.findAllPublishForShop({ query, limit, skip });
   }
 }
 class Product {

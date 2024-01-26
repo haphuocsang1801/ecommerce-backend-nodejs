@@ -53,9 +53,7 @@ const authentication = asyncHandler(async (req, res, next) => {
     throw new AuthFailureError("Invalid Request");
   }
   try {
-    console.log("authentication ~ keyStore:", keyStore);
     const decoded = jwt.verify(accessToken, keyStore.privateKey);
-    console.log("authentication ~ decoded:", decoded);
     if (userId !== decoded.userId) throw new AuthFailureError("Invalid UserId");
     req.keyStore = keyStore;
     return next();
@@ -101,9 +99,7 @@ const authenticationV2 = asyncHandler(async (req, res, next) => {
     throw new AuthFailureError("Invalid Request");
   }
   try {
-    console.log("authentication ~ keyStore:", keyStore);
     const decoded = jwt.verify(accessToken, keyStore.privateKey);
-    console.log("authentication ~ decoded:", decoded);
     if (userId !== decoded.userId) throw new AuthFailureError("Invalid UserId");
     req.keyStore = keyStore;
     return next();
