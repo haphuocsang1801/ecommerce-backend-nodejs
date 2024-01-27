@@ -32,6 +32,15 @@ class ProductController {
       }),
     }).send(res);
   }
+  unPublishProductByShop = async (req, res, next) => {
+    new SuccessResponse({
+      message: "unPublishProductByShop success!",
+      metadata: await ProductServiceV2.unPublishProductByShop({
+        product_id: req.params.id,
+        product_shop: req.user.userId,
+      }),
+    }).send(res);
+  }
 
   // QUERY //
   /**
@@ -54,6 +63,12 @@ class ProductController {
      metadata: await ProductServiceV2.findAllPublishForShop({
        product_shop: req.user.userId,
      }),
+   }).send(res);
+  };
+  getListSearchProduct = async (req, res, next) => {
+    new SuccessResponse({
+     message: "Get getListSearchProduct success!",
+     metadata: await ProductServiceV2.searchProducts(req.params),
    }).send(res);
  };
 }

@@ -24,6 +24,15 @@ class ProductFactory {
       product_shop
     })
   }
+  static async unPublishProductByShop({
+    product_shop,
+    product_id
+  }) {
+      return await productRepo.unPublishProductByShop({
+      product_id,
+      product_shop
+    })
+  }
   // END PUT //
 
 
@@ -41,6 +50,9 @@ class ProductFactory {
       isPublish: true,
     };
     return await productRepo.findAllPublishForShop({ query, limit, skip });
+  }
+  static async searchProducts({keySearch }) {
+    return await productRepo.searchProductsByUser({keySearch})
   }
 }
 class Product {
