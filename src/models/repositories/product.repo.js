@@ -1,7 +1,7 @@
 "use strict"
 const { product, electronic, clothing, furniture } = require("../product.model")
 const { Types } = require("mongoose")
-const {getSelectData,unGetSelectData} = require("../../utils/index")
+const { getSelectData, unGetSelectData } = require("../../utils/index")
 const findAllDarftForShop = async ({ query, limit = 50, skip = 0 }) => {
   return await queryProduct({ query, limit, skip })
 }
@@ -42,7 +42,7 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
     .lean()
   return products
 }
-const findProduct = async ({product_id, unSelect}) => {
+const findProduct = async ({ product_id, unSelect }) => {
   return await product.findById(product_id).select(unGetSelectData(unSelect))
 }
 const searchProductsByUser = async ({ keySearch }) => {
@@ -58,6 +58,16 @@ const searchProductsByUser = async ({ keySearch }) => {
     .sort({ score: { $meta: "textScore" } })
     .lean()
   return results
+}
+const updateProductById = async ({
+  productId,
+  bodyUpdate,
+  model,
+  isNew = true,
+}) => {
+  return await model.findByIdAndUpdate(productId, bodyUpdate, {
+    new: isNew,
+  })
 }
 const queryProduct = async ({ query, limit, skip }) => {
   return await product
@@ -76,5 +86,6 @@ module.exports = {
   unPublishProductByShop,
   searchProductsByUser,
   findAllProducts,
-  findProduct
+  findProduct,
+  updateProductById,
 }

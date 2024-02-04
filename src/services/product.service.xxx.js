@@ -8,6 +8,7 @@ const {
 } = require("../models/product.model")
 const { BadRequestError } = require("../core/error.response")
 const productRepo = require("../models/repositories/product.repo")
+const { removeUndefinedObject, updatedNestedObjectParser } = require("../utils")
 class ProductFactory {
   static productRegistry = {}
   static registerProductType(type, classRef) {
@@ -19,11 +20,11 @@ class ProductFactory {
       throw new BadRequestError(`Invalid product type:: ${type}`)
     return await new ProductClass(payload).createProduct()
   }
-  static async updateProduct(type, payload) {
+  static async updateProduct(type, productId, payload) {
     const ProductClass = ProductFactory.productRegistry[type]
     if (!ProductClass)
       throw new BadRequestError(`Invalid product type:: ${type}`)
-    return await new ProductClass(payload).createProduct()
+    return new ProductClass(payload).updateProduct(productId)
   }
   //PUT
   static async publishProductByShop({ product_shop, product_id }) {
@@ -72,10 +73,10 @@ class ProductFactory {
       sort,
     })
   }
-  static async findProduct({product_id}) {
+  static async findProduct({ product_id }) {
     return await productRepo.findProduct({
       product_id,
-      unSelect:["__v"]
+      unSelect: ["__v"],
     })
   }
 }
@@ -102,6 +103,13 @@ class Product {
   async createProduct(productId) {
     return await product.create({ ...this, _id: productId })
   }
+  async updateProduct(productId, bodyUpdate) {
+    return await productRepo.updateProductById({
+      productId,
+      bodyUpdate,
+      model: product,
+    })
+  }
 }
 
 //define sub-class for different product types clothing
@@ -115,6 +123,23 @@ class Clothing extends Product {
     const newProduct = await super.createProduct(newClothing._id)
     if (!newProduct) throw new BadRequestError("Cannot create new product")
     return newProduct
+  }
+  async updateProduct(productId) {
+    //1.remove attriute null or undefined
+    const objectParams = removeUndefinedObject(updateNest)
+    //2.check xem update ở chỗ nào
+    if (objectParams.product_attributes) {
+      //update child
+      await productRepo.updateProductById({
+        productId,
+        bodyUpdate: updatedNestedObjectParser(objectParams.product_attributes),
+        model: clothing,
+      })
+    }
+    return await super.updateProduct(
+      productId,
+      updatedNestedObjectParser(objectParams)
+    )
   }
 }
 //define sub-class for different product types electronics
@@ -130,6 +155,23 @@ class Electronic extends Product {
     if (!newProduct) throw new BadRequestError("Cannot create new product")
     return newProduct
   }
+  async updateProduct(productId) {
+    //1.remove attriute null or undefined
+    const objectParams = removeUndefinedObject(updateNest)
+    //2.check xem update ở chỗ nào
+    if (objectParams.product_attributes) {
+      //update child
+      await productRepo.updateProductById({
+        productId,
+        bodyUpdate: updatedNestedObjectParser(objectParams.product_attributes),
+        model: electronic,
+      })
+    }
+    return await super.updateProduct(
+      productId,
+      updatedNestedObjectParser(objectParams)
+    )
+  }
 }
 //define sub-class for different product types electronics
 class Furniture extends Product {
@@ -142,6 +184,23 @@ class Furniture extends Product {
     const newProduct = await super.createProduct(newFurniture._id)
     if (!newProduct) throw new BadRequestError("Cannot create new product")
     return newProduct
+  }
+  async updateProduct(productId) {
+    //1.remove attriute null or undefined
+    const objectParams = removeUndefinedObject(updateNest)
+    //2.check xem update ở chỗ nào
+    if (objectParams.product_attributes) {
+      //update child
+      await productRepo.updateProductById({
+        productId,
+        bodyUpdate: updatedNestedObjectParser(objectParams.product_attributes),
+        model: furniture,
+      })
+    }
+    return await super.updateProduct(
+      productId,
+      updatedNestedObjectParser(objectParams)
+    )
   }
 }
 //register product types
