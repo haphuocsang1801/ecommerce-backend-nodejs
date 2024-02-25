@@ -11,7 +11,6 @@ const productSchema = new Schema(
     },
     product_thumb: {
       type: String,
-      required: true,
     },
     product_price: {
       type: Number,
@@ -20,7 +19,6 @@ const productSchema = new Schema(
     product_slug: String,
     product_description: {
       type: String,
-      required: true,
     },
     //quantity
     product_quantity: {
@@ -130,5 +128,5 @@ module.exports = {
   product: model(DOCUMENT_NAME, productSchema),
   clothing: model("Clothing", clothingSchema),
   electronic: model("Electronic", electronicSchema),
-  furniture: model("Furniture", electronicSchema),
+  furniture: model("Furniture", furnitureSchema),
 };
