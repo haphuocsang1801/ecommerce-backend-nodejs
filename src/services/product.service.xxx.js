@@ -10,6 +10,8 @@ const { BadRequestError } = require("../core/error.response")
 const productRepo = require("../models/repositories/product.repo")
 const invenRepo = require("../models/repositories/inventory.repo")
 const { removeUndefinedObject, updatedNestedObjectParser } = require("../utils")
+const { pushNotiToSystem } = require("./notification.service")
+const { NOTIFICATIONS } = require("../utils/notification")
 class ProductFactory {
   static productRegistry = {}
   static registerProductType(type, classRef) {
@@ -70,7 +72,12 @@ class ProductFactory {
       limit,
       filter,
       page,
-      select: ["product_name", "product_price", "product_thumb","product_shop"],
+      select: [
+        "product_name",
+        "product_price",
+        "product_thumb",
+        "product_shop",
+      ],
       sort,
     })
   }
@@ -110,6 +117,18 @@ class Product {
         shopId: this.product_shop,
         stock: this.product_quantity,
       })
+      //push notification to system
+			pushNotiToSystem({
+				type: NOTIFICATIONS.NEW_PRODUCT,
+				recieverId: 1,
+				senderId: this.product_shop, // shopId
+				options: {
+					product_name: this.product_name,
+					shop_name: this.product_shop,
+				},
+			}).then((noti) => {
+				console.log("push notification to system", noti)
+			}).catch(console.error)
     }
     return newProduct
   }

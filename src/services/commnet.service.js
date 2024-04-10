@@ -2,6 +2,7 @@
 const { NotFoundError } = require("../core/error.response")
 const Comment = require("../models/comment.model")
 const { convertToObjectIdMongodb } = require("../utils")
+const { findProduct } = require("./product.service.xxx")
 
 class CommentService {
   static async createComment({
@@ -59,7 +60,6 @@ class CommentService {
           sort: { comment_right: -1 },
         }
       )
-      console.log("CommentService : maxRightValue:", maxRightValue)
       if (maxRightValue) {
         rightValue = maxRightValue.comment_right + 1
       } else {
@@ -118,6 +118,57 @@ class CommentService {
       .limit(limit)
       .skip(offset)
     return comments
+  }
+  static async deleteComment({ commentId, productId }) {
+    // 1. check the product exits in database
+    const foundProduct = await findProduct({
+      product_id: productId,
+    })
+    if (!foundProduct) throw new NotFoundError("Product not found")
+    // 2. check the comment exits in database
+    const foundComment = await Comment.findById(commentId)
+    if (!foundComment) throw new NotFoundError("Comment not found")
+    // 3. delete the comment
+    const rightValue = foundComment.comment_right
+    const leftValue = foundComment.comment_left
+
+    const width = rightValue - leftValue + 1
+
+    await Comment.deleteMany({
+      comment_productId: convertToObjectIdMongodb(productId),
+      comment_left: {
+        $lte: rightValue,
+        $gte: leftValue,
+      },
+		})
+		// 4. update the left and right value of the comment
+    await Comment.updateMany(
+      {
+        comment_productId: convertToObjectIdMongodb(productId),
+        comment_right: {
+          $gt: rightValue,
+        },
+      },
+      {
+        $inc: {
+          comment_right: -width,
+        },
+      }
+    )
+    await Comment.updateMany(
+      {
+        comment_productId: convertToObjectIdMongodb(productId),
+        comment_left: {
+          $gt: rightValue,
+        },
+      },
+      {
+        $inc: {
+          comment_left: -width,
+        },
+      }
+    )
+		return true
   }
 }
 module.exports = CommentService

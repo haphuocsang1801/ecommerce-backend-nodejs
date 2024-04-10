@@ -1,15 +1,14 @@
 "use strict"
 const express = require("express")
-const CommentController = require("../../controllers/comment.controller")
+const NotificationController = require("../../controllers/notification.controller")
 const { asyncHandler } = require("../../auth/checkAuth")
 const { authenticationV2 } = require("../../auth/authUtils")
 const router = express.Router()
+//Here not login
 
 //authentication
 router.use(authenticationV2)
 
-router.post("", asyncHandler(CommentController.createComment))
-router.get("/", asyncHandler(CommentController.getCommnetByParentId))
-router.delete("/", asyncHandler(CommentController.deleteCommentById))
+router.get("", asyncHandler(NotificationController.listNotiByUser))
 //QUERY
 module.exports = router
